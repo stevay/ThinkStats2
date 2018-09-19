@@ -21,7 +21,14 @@ def Mode(hist):
 
     returns: value from Hist
     """
-    return 0
+    highest_freq = 0
+    mode_val = 0
+    for val, freq in hist.Items():
+        if freq > highest_freq:
+            highest_freq = freq
+            mode_val = val
+    
+    return mode_val
 
 
 def AllModes(hist):
@@ -31,8 +38,30 @@ def AllModes(hist):
 
     returns: iterator of value-freq pairs
     """
-    return []
+    new_list = []
+    for val in hist:
+        new_list.append([val,hist.Freq(val)])
+        
+    return new_list
 
+def WeightDifference(firsts, others):
+    
+    import numpy as np
+    
+    print('Mean difference: ',firsts.totalwgt_lb.mean()-others.totalwgt_lb.mean())
+    
+    # calculate Cohen Effect Size
+    firsts_var = firsts.totalwgt_lb.var()
+    others_var = others.totalwgt_lb.var()
+    firsts_len = len(firsts.totalwgt_lb)
+    others_len = len(others.totalwgt_lb)
+    firsts_mean = firsts.totalwgt_lb.mean()
+    others_mean = others.totalwgt_lb.mean()
+    
+    pooled_var = (firsts_len*firsts_var + others_len*others_var) / (firsts_len+others_len)
+    mean_diff = firsts_mean - others_mean
+    d = mean_diff / np.sqrt(pooled_var)
+    print('Cohen Effect Size: ', d)
 
 def main(script):
     """Tests the functions in this module.
@@ -53,6 +82,9 @@ def main(script):
 
     for value, freq in modes[:5]:
         print(value, freq)
+    
+    # check weight difference
+    WeightDifference(firsts,others)
 
     print('%s: All tests passed.' % script)
 
